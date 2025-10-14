@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bananas Koki - O Sabor da Sua Saúde</title>
+    <title id="site-title-tag">Bananas Koki - O Sabor da Sua Saúde</title>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script> 
 
     <style>
         /* Reset e Base */
@@ -14,6 +17,7 @@
             font-family: 'Verdana', sans-serif;
         }
         body { 
+            /* Paleta de cores: amarelo e verde para banana e frescor */
             background: linear-gradient(135deg, #f0f4c3, #fffde7); /* Fundo suave com gradiente */
             color: #333; 
             line-height: 1.6;
@@ -111,7 +115,7 @@
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
         }
         
-        /* Card de Produto - Efeito 3D */
+        /* Card de Produto - Efeito 3D e Interativo */
         .product-card {
             background-color: #ffffff;
             border-radius: 12px;
@@ -122,6 +126,7 @@
             border: 1px solid #eee;
             /* Estilo 3D inicial sutil */
             transform: perspective(1000px) rotateX(0deg) scale(1);
+            cursor: pointer;
         }
         .product-card:hover {
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
@@ -150,6 +155,20 @@
             padding: 5px 0;
             border-top: 1px dashed #ddd;
             margin-top: 10px;
+        }
+        .whatsapp-button {
+            background-color: #25D366; /* WhatsApp Green */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .whatsapp-button:hover {
+            background-color: #128C7E;
         }
 
         /* Rodapé e Informações da Empresa */
@@ -186,20 +205,19 @@
         }
     </style>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
 </head>
 <body>
     <div id="site-container">
         <header class="site-header" id="site-header">
-            </header>
+            <h1 class="site-title">CARREGANDO...</h1>
+        </header>
 
         <main>
             <h2 class="section-title">Nossas Categorias de Bananas</h2>
             
             <div class="category-tabs" id="category-tabs">
-                </div>
+                <p style="color: #6A1B9A;">Carregando categorias...</p>
+            </div>
 
             <div id="products-grid">
                 <p style="grid-column: 1 / -1; text-align: center;">Carregando os melhores produtos...</p>
@@ -207,7 +225,8 @@
         </main>
         
         <footer class="site-footer" id="site-footer">
-            </footer>
+            <p>Carregando informações da empresa...</p>
+        </footer>
 
     </div>
 
