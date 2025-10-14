@@ -98,6 +98,7 @@ function renderProducts(categoryKey) {
     const whatsappNumber = siteData.settings.whatsapp;
 
     products.forEach(product => {
+        // A URL da imagem (agora vinda do Cloudinary) é usada diretamente.
         const waLink = `https://wa.me/${whatsappNumber}?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20a%20${product.name}%20(R%24%20${product.price ? product.price.toFixed(2).replace('.', ',') : '0,00'}).`;
 
         productsHTML += `
