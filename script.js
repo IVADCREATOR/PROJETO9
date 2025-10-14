@@ -30,8 +30,12 @@ function renderInfo(settings) {
     document.getElementById('site-header').innerHTML = `
         <h1 class="site-title">${settings.siteName || "BANANAS KOKI"}</h1>
         <div class="contact-links">
-            <a href="https://wa.me/${whatsapp}" target="_blank">WhatsApp</a>
-            <a href="https://instagram.com/${settings.instagram.replace('@', '')}" target="_blank">Instagram</a>
+            <a href="https://wa.me/${whatsapp}" target="_blank">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+            <a href="https://instagram.com/${(settings.instagram || '').replace('@', '')}" target="_blank">
+                <i class="fab fa-instagram"></i> Instagram
+            </a>
         </div>
     `;
     document.getElementById('site-title-tag').innerText = settings.siteName || "Bananas Koki";
@@ -41,7 +45,7 @@ function renderInfo(settings) {
         <div class="company-info">
             <p style="font-size: 1.2em; font-weight: bold;">${settings.siteName || "BANANAS KOKI"}</p>
             <p>O Sabor da Sua Saúde - Fornecemos as melhores bananas, frescas e de alta qualidade, direto do produtor.</p>
-            <p>Fale conosco: ${whatsapp} | Siga-nos: ${settings.instagram || '@bananaskoki'}</p>
+            <p>Fale conosco: <a href="https://wa.me/${whatsapp}" target="_blank">${whatsapp}</a> | Siga-nos: <a href="https://instagram.com/${(settings.instagram || '').replace('@', '')}" target="_blank">${settings.instagram || '@bananaskoki'}</a></p>
             <p style="margin-top: 15px; font-size: 0.8em;">© ${new Date().getFullYear()} Todos os direitos reservados.</p>
         </div>
     `;
@@ -58,7 +62,7 @@ function renderCategoryTabs() {
     const categoryKeys = Object.keys(categories);
 
     if (categoryKeys.length === 0) {
-        tabsContainer.innerHTML = '<p style="color: #6A1B9A;">Nenhuma categoria disponível no momento.</p>';
+        tabsContainer.innerHTML = '<p style="color: var(--color-text);">Nenhuma categoria disponível no momento.</p>';
         return;
     }
 
@@ -66,7 +70,6 @@ function renderCategoryTabs() {
         const category = categories[key];
         const isActive = key === currentCategoryKey ? 'active' : '';
 
-        // O evento onclick chama a função para filtrar os produtos
         tabsHTML += `
             <button class="tab-button ${isActive}" onclick="filterProducts('${key}', this)">
                 ${category.name}
@@ -86,26 +89,27 @@ function renderProducts(categoryKey) {
     const category = siteData.categories[categoryKey];
     
     if (!category || !category.products) {
-         grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">Nenhum produto encontrado nesta categoria.</p>';
+         grid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; font-size: 1.2em; padding: 50px;">Nenhum produto encontrado nesta categoria.</p>';
          return;
     }
 
-    const products = Object.values(category.products); // Converte o objeto de produtos em array
+    const products = Object.values(category.products);
     let productsHTML = '';
     const whatsappNumber = siteData.settings.whatsapp;
 
     products.forEach(product => {
-        // Gera o link do WhatsApp com mensagem pré-preenchida
-        const waLink = `https://wa.me/${whatsappNumber}?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20a%20${product.name}%20(R%24%20${product.price.toFixed(2).replace('.', ',')}).`;
+        const waLink = `https://wa.me/${whatsappNumber}?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20a%20${product.name}%20(R%24%20${product.price ? product.price.toFixed(2).replace('.', ',') : '0,00'}).`;
 
         productsHTML += `
             <div class="product-card">
-                <img src="${product.imgUrl}" alt="${product.name}" class="product-image">
-                <h4 class="product-name">${product.name}</h4>
-                <p class="product-price">R$ ${product.price.toFixed(2).replace('.', ',')}</p>
-                <a href="${waLink}" target="_blank">
-                    <button class="whatsapp-button">Pedir por WhatsApp</button>
-                </a>
+                <img src="${product.imgUrl || 'placeholder.jpg'}" alt="${product.name}" class="product-image">
+                <div class="product-details">
+                    <h4 class="product-name">${product.name}</h4>
+                    <p class="product-price">R$ ${product.price ? product.price.toFixed(2).replace('.', ',') : '0,00'}</p>
+                    <a href="${waLink}" target="_blank">
+                        <button class="whatsapp-button">Pedir por WhatsApp</button>
+                    </a>
+                </div>
             </div>
         `;
     });
@@ -119,7 +123,7 @@ function renderProducts(categoryKey) {
 
 /**
  * Filtra e exibe os produtos de uma determinada categoria.
- * @param {string} key - A chave da categoria ('prata', 'nanica', etc.)
+ * @param {string} key - A chave da categoria.
  * @param {HTMLElement} element - O botão que foi clicado.
  */
 function filterProducts(key, element) {
@@ -129,11 +133,9 @@ function filterProducts(key, element) {
     const buttons = document.querySelectorAll('.tab-button');
     buttons.forEach(btn => btn.classList.remove('active'));
     
-    // O elemento pode ser nulo se for a primeira inicialização
     if (element) {
         element.classList.add('active');
     } else {
-        // Ativa o primeiro botão correspondente
         const initialButton = document.querySelector(`.tab-button[onclick*="'${key}'"]`);
         if (initialButton) {
             initialButton.classList.add('active');
@@ -154,7 +156,7 @@ async function initializeApp() {
             categories: {}
         };
 
-        // 1. Carregar Configurações Gerais (Leitura é liberada pelas Rules)
+        // 1. Carregar Configurações Gerais
         const settingsDoc = await db.collection('settings').doc('site_config').get();
         if (settingsDoc.exists) {
             data.settings = settingsDoc.data();
@@ -190,7 +192,7 @@ async function initializeApp() {
         if (currentCategoryKey) {
             renderProducts(currentCategoryKey);
         } else {
-            document.getElementById('products-grid').innerHTML = '<p style="grid-column: 1 / -1; text-align: center;">O site ainda não possui produtos ou categorias. Por favor, acesse o Painel ADM.</p>';
+            document.getElementById('products-grid').innerHTML = '<p style="grid-column: 1 / -1; text-align: center; font-size: 1.2em; padding: 50px;">O site ainda não possui produtos ou categorias. Por favor, acesse o Painel ADM para cadastrar.</p>';
         }
 
     } catch (error) {
@@ -198,7 +200,7 @@ async function initializeApp() {
         document.getElementById('site-container').innerHTML = `
             <div style="text-align: center; margin-top: 100px; color: red;">
                 <h1>Erro de Conexão</h1>
-                <p>Não foi possível carregar os dados do site. Verifique a conexão com o Firebase.</p>
+                <p>Não foi possível carregar os dados do site. Verifique as configurações do Firebase e as Regras de Segurança (devem permitir leitura pública).</p>
             </div>
         `;
     }
